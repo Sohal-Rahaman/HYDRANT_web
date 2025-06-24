@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HYDRANT 2.O - Water Delivery, Simplified.</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Tailwind's gray-50 */
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #3b82f6, #1e40af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card-shadow {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .card-shadow-hover {
+            transition: all 0.3s ease-in-out;
+        }
+        .card-shadow-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        /* Animation for scroll */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.6s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* FAQ Accordion Styles */
+        .faq-question {
+            cursor: pointer;
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 200px; /* Adjust as needed */
+            padding-top: 1rem;
+        }
+        .faq-item.active .faq-arrow {
+            transform: rotate(180deg);
+        }
+        .faq-arrow {
+            transition: transform 0.3s ease;
+        }
+        /* Modal Styles */
+        .modal-overlay {
+            transition: opacity 0.3s ease;
+        }
+        .modal-container {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        /* Loading Spinner */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased">
+
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50 shadow-sm">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold gradient-text">HYDRANT 2.O</h1>
+            <button id="join-waitlist-btn-header" class="bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-md">Join Waitlist</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="bg-white pt-32 pb-20 md:pt-40 md:pb-28">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl md:text-6xl font-extrabold text-gray-900 leading-tight">
+                    Never Run Out of Water Again.
+                </h2>
+                <p class="mt-4 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+                    HYDRANT 2.O is the simplest way to get fresh 20-litre water jars delivered to your doorstep. Join the waitlist for <span class="font-semibold text-blue-600">early access</span> and exclusive launch-day benefits!
+                </p>
+                <div id="countdown" class="mt-10 mb-8 flex justify-center space-x-2 sm:space-x-4 md:space-x-8"></div>
+                <div id="waitlist" class="mt-10 max-w-md mx-auto">
+                     <button id="join-waitlist-btn-hero" class="w-full sm:w-auto bg-blue-600 text-white font-bold px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-lg hover:shadow-xl text-lg">
+                        Secure Your Spot Now
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="py-20">
+             <div class="container mx-auto px-6">
+                <div class="text-center mb-16 reveal">
+                    <h3 class="text-3xl md:text-4xl font-bold text-gray-900">Everything You Need, In One App</h3>
+                    <p class="mt-2 text-lg text-gray-500">Manage your water supply effortlessly.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-8 rounded-xl card-shadow-hover reveal flex flex-col items-center text-center">
+                        <div class="bg-blue-100 text-blue-600 rounded-lg w-16 h-16 flex items-center justify-center"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></div>
+                        <h4 class="mt-5 text-xl font-bold">Effortless Ordering</h4>
+                        <p class="mt-2 text-gray-600">Quickly add 20-litre jars to cart with a smooth multi-step checkout. Order water in seconds.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl card-shadow-hover reveal flex flex-col items-center text-center">
+                        <div class="bg-blue-100 text-blue-600 rounded-lg w-16 h-16 flex items-center justify-center"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg></div>
+                        <h4 class="mt-5 text-xl font-bold">Secure Account</h4>
+                        <p class="mt-2 text-gray-600">Safe sign-up and login with profile management. App remembers you for seamless future orders.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl card-shadow-hover reveal flex flex-col items-center text-center">
+                        <div class="bg-blue-100 text-blue-600 rounded-lg w-16 h-16 flex items-center justify-center"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></div>
+                        <h4 class="mt-5 text-xl font-bold">Address Book</h4>
+                        <p class="mt-2 text-gray-600">Save up to three delivery addresses (Home, Office, Other) with default settings for ultimate convenience.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl card-shadow-hover reveal flex flex-col items-center text-center">
+                        <div class="bg-blue-100 text-blue-600 rounded-lg w-16 h-16 flex items-center justify-center"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
+                        <h4 class="mt-5 text-xl font-bold">Never Run Out</h4>
+                        <p class="mt-2 text-gray-600">Smart subscription service with custom quantity, frequency, and delivery slots. Water when you need it.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl card-shadow-hover reveal flex flex-col items-center text-center">
+                        <div class="bg-blue-100 text-blue-600 rounded-lg w-16 h-16 flex items-center justify-center"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg></div>
+                        <h4 class="mt-5 text-xl font-bold">Order History</h4>
+                        <p class="mt-2 text-gray-600">Complete order tracking with organized tabs: Progress, Completed, Cancelled. Never lose track.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl card-shadow-hover reveal flex flex-col items-center text-center">
+                        <div class="bg-blue-100 text-blue-600 rounded-lg w-16 h-16 flex items-center justify-center"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg></div>
+                        <h4 class="mt-5 text-xl font-bold">Mobile First</h4>
+                        <p class="mt-2 text-gray-600">Native mobile experience optimized for speed and usability. Manage water delivery from anywhere.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Subscription Suggester Section -->
+        <section class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16 reveal">
+                    <h3 class="text-3xl md:text-4xl font-bold text-gray-900">Find Your Perfect Plan ✨</h3>
+                    <p class="mt-2 text-lg text-gray-500">Let our AI help you choose the best subscription.</p>
+                </div>
+                <div class="max-w-2xl mx-auto bg-gray-50 p-8 rounded-2xl card-shadow reveal">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="household-size" class="block text-sm font-medium text-gray-700">How many people?</label>
+                            <input type="number" id="household-size" min="1" value="2" class="mt-1 w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label for="consumption-level" class="block text-sm font-medium text-gray-700">Consumption Level</label>
+                            <select id="consumption-level" class="mt-1 w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                                <option>Light (for drinking only)</option>
+                                <option selected>Moderate (drinking & some cooking)</option>
+                                <option>Heavy (drinking, cooking, etc.)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button id="suggestion-btn" class="mt-6 w-full bg-blue-600 text-white font-bold px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-lg hover:shadow-xl flex items-center justify-center">
+                        <span id="suggestion-btn-text">✨ Get AI Suggestion</span>
+                        <div id="suggestion-loader" class="loader hidden"></div>
+                    </button>
+                    <div id="suggestion-result" class="mt-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg hidden">
+                        <p class="text-blue-800"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Early Access Benefits Section -->
+        <section class="py-20">
+             <div class="container mx-auto px-6">
+                <div class="text-center mb-16 reveal">
+                    <h3 class="text-3xl md:text-4xl font-bold gradient-text">Early Access Benefits</h3>
+                    <p class="mt-2 text-lg text-gray-500">Join our waitlist and unlock exclusive benefits when HYDRANT 2.O launches.</p>
+                </div>
+                <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="bg-gray-50 p-8 rounded-xl card-shadow-hover reveal text-center">
+                        <div class="bg-blue-100 text-blue-600 rounded-lg w-16 h-16 flex items-center justify-center mx-auto"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                        <h4 class="mt-5 text-xl font-bold">Joining Fee Free</h4>
+                        <p class="mt-2 text-gray-600">No joining fees for early adopters - start saving immediately.</p>
+                    </div>
+                    <div class="bg-gray-50 p-8 rounded-xl card-shadow-hover reveal text-center">
+                        <div class="bg-blue-100 text-blue-600 rounded-lg w-16 h-16 flex items-center justify-center mx-auto"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                        <h4 class="mt-5 text-xl font-bold">Free Delivery Guarantee</h4>
+                        <p class="mt-2 text-gray-600">Complimentary delivery for your first 3 orders.</p>
+                    </div>
+                    <div class="bg-gray-50 p-8 rounded-xl card-shadow-hover reveal text-center">
+                        <div class="bg-blue-100 text-blue-600 rounded-lg w-16 h-16 flex items-center justify-center mx-auto"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21v-2a6 6 0 00-12 0v2"></path></svg></div>
+                        <h4 class="mt-5 text-xl font-bold">Referral Rewards</h4>
+                        <p class="mt-2 text-gray-600">Wallet balance, HYDRANT Coffee Mug, Xyloivia Fridge container.</p>
+                    </div>
+                    <div class="bg-gray-50 p-8 rounded-xl card-shadow-hover reveal text-center">
+                        <div class="bg-blue-100 text-blue-600 rounded-lg w-16 h-16 flex items-center justify-center mx-auto"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg></div>
+                        <h4 class="mt-5 text-xl font-bold">Spot Secure</h4>
+                        <p class="mt-2 text-gray-600">Reserve your spot with full details - Name, address, phone, email, pincode.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Meet Our Team Section -->
+        <section id="team-section" class="py-20 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16 reveal">
+                    <h3 class="text-3xl md:text-4xl font-bold text-gray-900">👥 Meet The Team – HYDRANT 2.O</h3>
+                    <p class="mt-2 text-lg text-gray-500">Passionate professionals working to revolutionize water delivery.</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    
+                    <div class="bg-white rounded-lg overflow-hidden card-shadow-hover reveal">
+                        <img class="w-full h-56 object-cover object-center" src="https://placehold.co/400x300/3b82f6/FFFFFF?text=SR" alt="Sohal Rahaman" onerror="this.onerror=null;this.src='https://placehold.co/400x300/3b82f6/FFFFFF?text=SR';">
+                        <div class="p-6">
+                            <h4 class="text-xl font-bold">Sohal Rahaman</h4>
+                            <p class="text-blue-600 font-semibold text-sm">Business Lead, Full Stack Development</p>
+                            <p class="mt-4 text-gray-600 italic">"Sohal is the visionary force... he believes that innovation must always align with simplicity. Sohal says, 'A product should be so seamless that the user forgets it’s technology.'"</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg overflow-hidden card-shadow-hover reveal">
+                        <img class="w-full h-56 object-cover object-center" src="https://placehold.co/400x300/3b82f6/FFFFFF?text=MR" alt="Motiur Rahaman" onerror="this.onerror=null;this.src='https://placehold.co/400x300/3b82f6/FFFFFF?text=MR';">
+                        <div class="p-6">
+                            <h4 class="text-xl font-bold">Motiur Rahaman</h4>
+                            <p class="text-blue-600 font-semibold text-sm">Business Development, Design, Advertisement</p>
+                            <p class="mt-4 text-gray-600 italic">"Motiur brings creativity and strategy together... 'People don’t just buy water – they buy trust. Our brand should feel like a promise delivered,' he says."</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg overflow-hidden card-shadow-hover reveal">
+                        <img class="w-full h-56 object-cover object-center" src="https://placehold.co/400x300/3b82f6/FFFFFF?text=SD" alt="Shubho Das" onerror="this.onerror=null;this.src='https://placehold.co/400x300/3b82f6/FFFFFF?text=SD';">
+                        <div class="p-6">
+                            <h4 class="text-xl font-bold">Shubho Das</h4>
+                            <p class="text-blue-600 font-semibold text-sm">Web Development</p>
+                            <p class="mt-4 text-gray-600 italic">"Shubho is the builder behind the digital experience... He shares, 'Web development isn’t about flashy effects – it’s about giving users the fastest way to what they need.'"</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg overflow-hidden card-shadow-hover reveal">
+                        <img class="w-full h-56 object-cover object-center" src="https://placehold.co/400x300/3b82f6/FFFFFF?text=GO" alt="Golam Oliulla" onerror="this.onerror=null;this.src='https://placehold.co/400x300/3b82f6/FFFFFF?text=GO';">
+                        <div class="p-6">
+                            <h4 class="text-xl font-bold">Golam Oliulla</h4>
+                            <p class="text-blue-600 font-semibold text-sm">Marketing, Design</p>
+                            <p class="mt-4 text-gray-600 italic">"Golam merges design thinking with smart marketing... 'Good design should disappear into the experience. If they notice the design too much, something’s wrong,' he quips."</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg overflow-hidden card-shadow-hover reveal">
+                        <img class="w-full h-56 object-cover object-center" src="https://placehold.co/400x300/3b82f6/FFFFFF?text=MR" alt="Md Rubel" onerror="this.onerror=null;this.src='https://placehold.co/400x300/3b82f6/FFFFFF?text=MR';">
+                        <div class="p-6">
+                            <h4 class="text-xl font-bold">Md Rubel</h4>
+                            <p class="text-blue-600 font-semibold text-sm">Research & Analytics</p>
+                            <p class="mt-4 text-gray-600 italic">"Rubel is the data whisperer of HYDRANT... 'Assumptions are expensive – let the data speak before we act,' he believes."</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg overflow-hidden card-shadow-hover reveal">
+                        <img class="w-full h-56 object-cover object-center" src="https://placehold.co/400x300/3b82f6/FFFFFF?text=MK" alt="Meraj Khan" onerror="this.onerror=null;this.src='https://placehold.co/400x300/3b82f6/FFFFFF?text=MK';">
+                        <div class="p-6">
+                            <h4 class="text-xl font-bold">Meraj Khan</h4>
+                            <p class="text-blue-600 font-semibold text-sm">Business Development</p>
+                            <p class="mt-4 text-gray-600 italic">"Meraj thrives on building relationships... 'Every connection is a potential turning point. Listen first, pitch later,' is his mantra."</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg overflow-hidden card-shadow-hover reveal">
+                        <img class="w-full h-56 object-cover object-center" src="https://placehold.co/400x300/3b82f6/FFFFFF?text=TM" alt="Tiyasa Mondal" onerror="this.onerror=null;this.src='https://placehold.co/400x300/3b82f6/FFFFFF?text=TM';">
+                        <div class="p-6">
+                            <h4 class="text-xl font-bold">Tiyasa Mondal</h4>
+                            <p class="text-blue-600 font-semibold text-sm">Advertisement Lead, Role Model</p>
+                            <p class="mt-4 text-gray-600 italic">"Tiyasa brings elegance and energy to HYDRANT’s voice... She believes, 'Great ads don't interrupt; they inspire. If we can touch emotion, we can win attention.'"</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- AI-Powered FAQ Section -->
+        <section class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16 reveal">
+                    <h3 class="text-3xl md:text-4xl font-bold text-gray-900">Frequently Asked Questions</h3>
+                    <p class="mt-2 text-lg text-gray-500">Have a different question? Ask our AI assistant! ✨</p>
+                </div>
+                
+                <div class="max-w-3xl mx-auto mb-10 reveal">
+                     <div class="relative">
+                        <input type="text" id="ai-faq-input" placeholder="e.g., How do I cancel a subscription?" class="w-full px-5 py-4 rounded-lg border-2 border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none pr-28">
+                        <button id="ai-faq-btn" class="absolute right-2 top-2 bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                             <span id="ai-faq-btn-text">Ask AI</span>
+                             <div id="ai-faq-loader" class="loader hidden"></div>
+                        </button>
+                    </div>
+                    <div id="ai-faq-result" class="mt-4 bg-gray-100 p-4 rounded-lg hidden"></div>
+                </div>
+
+                <div id="faq-container" class="max-w-3xl mx-auto space-y-4">
+                    <div class="faq-item bg-gray-50 p-6 rounded-lg card-shadow reveal">
+                        <div class="faq-question flex justify-between items-center">
+                            <h4 class="font-semibold text-lg">When will HYDRANT 2.O be available?</h4>
+                            <svg class="faq-arrow w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                        <div class="faq-answer text-gray-600">
+                            <p>HYDRANT 2.O is scheduled to launch on the Google Play Store on July 9th, 2025. Join the waitlist to get a notification the moment it's live!</p>
+                        </div>
+                    </div>
+                    <div class="faq-item bg-gray-50 p-6 rounded-lg card-shadow reveal">
+                        <div class="faq-question flex justify-between items-center">
+                            <h4 class="font-semibold text-lg">What's different from HYDRANT 1.0?</h4>
+                            <p class="faq-arrow w-6 h-6 text-gray-500 flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></p>
+                        </div>
+                        <div class="faq-answer text-gray-600">
+                            <p>HYDRANT 2.O is a complete rebuild with a more intuitive user interface, a new subscription service, an editable address book, and much faster performance for a seamless experience.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item bg-gray-50 p-6 rounded-lg card-shadow reveal">
+                        <div class="faq-question flex justify-between items-center">
+                            <h4 class="font-semibold text-lg">How does the subscription service work?</h4>
+                            <p class="faq-arrow w-6 h-6 text-gray-500 flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></p>
+                        </div>
+                        <div class="faq-answer text-gray-600">
+                            <p>Simply choose how many jars you need and how often you want them (e.g., 2 jars every 3 days). We'll automatically create and schedule the orders for you. You can pause or modify your subscription anytime.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item bg-gray-50 p-6 rounded-lg card-shadow reveal">
+                        <div class="faq-question flex justify-between items-center">
+                            <h4 class="font-semibold text-lg">What are the early access benefits?</h4>
+                            <p class="faq-arrow w-6 h-6 text-gray-500 flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></p>
+                        </div>
+                        <div class="faq-answer text-gray-600">
+                            <p>Waitlist members get priority access to the app, zero joining fees, free delivery on the first 3 orders, and exclusive referral rewards like wallet balance and HYDRANT merchandise.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item bg-gray-50 p-6 rounded-lg card-shadow reveal">
+                        <div class="faq-question flex justify-between items-center">
+                            <h4 class="font-semibold text-lg">Is my personal information secure?</h4>
+                            <p class="faq-arrow w-6 h-6 text-gray-500 flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></p>
+                        </div>
+                        <div class="faq-answer text-gray-600">
+                            <p>Absolutely. We use industry-standard encryption and security protocols to protect all your data. Your privacy and security are our top priorities.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Enhanced Footer -->
+    <footer class="bg-gray-900 text-white">
+        <div class="container mx-auto px-6 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+                <div>
+                    <h4 class="text-xl font-bold">HYDRANT 2.O</h4>
+                    <p class="mt-2 text-gray-400">Water delivery, simplified. Our mission is to ensure you never have to worry about your water supply again. Launching soon in West Bengal, India.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold">Contact Us</h4>
+                    <ul class="mt-2 space-y-2 text-gray-400">
+                        <li><a href="mailto:support@hydrant.co.in" class="hover:text-blue-400 transition-colors">support@hydrant.co.in</a></li>
+                        <li><a href="tel:03369028255" class="hover:text-blue-400 transition-colors">033 6902 8255</a></li>
+                        <li>Kolkata, West Bengal, India</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold">Follow Us</h4>
+                    <div class="flex justify-center md:justify-start mt-3 space-x-4">
+                        <a href="https://www.facebook.com/share/1Axm44LF9T/" target="_blank" class="text-gray-400 hover:text-blue-400 transition-colors" aria-label="Facebook"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v2.385z"/></svg></a>
+                        <a href="https://www.instagram.com/hydrant2.o?igsh=MTg3MmhsbG95azZybw==" target="_blank" class="text-gray-400 hover:text-blue-400 transition-colors" aria-label="Instagram"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.012 3.584-.07 4.85c-.148 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.069-1.645-.069-4.85s.012-3.584.07-4.85c.148-3.225 1.664-4.771 4.919-4.919 1.266-.057 1.644-.069 4.85-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.358-.2 6.78-2.618 6.98-6.98.059-1.281.073-1.689.073-4.948s-.014-3.667-.072-4.947c-.2-4.358-2.618-6.78-6.98-6.98-1.281-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44 1.441-.645 1.441-1.44-.645-1.44-1.441-1.44z"/></svg></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-gray-800 pt-6 text-center text-gray-500 text-sm">
+                &copy; 2025 HYDRANT 2.O. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal for Waitlist Form -->
+    <div id="waitlist-modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="modal-container bg-white p-8 rounded-xl shadow-2xl w-full max-w-md transform scale-95 opacity-0">
+            <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">Join the HYDRANT 2.O Waitlist!</h3>
+            <form id="waitlistForm" class="space-y-5">
+                <div>
+                    <label for="modal-name" class="block text-sm font-medium text-gray-700">Name</label>
+                    <input type="text" id="modal-name" name="name" required class="mt-1 w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="Your Full Name">
+                </div>
+                <div>
+                    <label for="modal-email" class="block text-sm font-medium text-gray-700">Email ID</label>
+                    <input type="email" id="modal-email" name="email" required class="mt-1 w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="your.email@example.com">
+                </div>
+                <div>
+                    <label for="modal-mobile" class="block text-sm font-medium text-gray-700">Mobile Number</label>
+                    <input type="tel" id="modal-mobile" name="mobile" required class="mt-1 w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="e.g., 9876543210">
+                </div>
+                <div>
+                    <label for="modal-address" class="block text-sm font-medium text-gray-700">Address</label>
+                    <input type="text" id="modal-address" name="address" required class="mt-1 w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="Your Street Address, Apartment, etc.">
+                </div>
+                <div>
+                    <label for="modal-pincode" class="block text-sm font-medium text-gray-700">Pincode</label>
+                    <input type="text" id="modal-pincode" name="pincode" required class="mt-1 w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="e.g., 700001">
+                </div>
+                <button type="submit" id="modal-submit-btn" class="w-full bg-blue-600 text-white font-bold px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-lg flex items-center justify-center">
+                    <span id="modal-btn-text">Submit to Waitlist</span>
+                    <div id="modal-loader" class="loader hidden ml-3"></div>
+                </button>
+                <p id="modal-form-message" class="mt-4 text-center text-sm hidden"></p>
+            </form>
+            <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-3xl">&times;</button>
+        </div>
+    </div>
+
+
+    <script>
+        // Smooth scroll reveal animation
+        const revealElements = document.querySelectorAll('.reveal');
+
+        function revealOnScroll() {
+            for (let i = 0; i < revealElements.length; i++) {
+                let windowHeight = window.innerHeight;
+                let elementTop = revealElements[i].getBoundingClientRect().top;
+                let elementVisible = 150; // Adjust this value
+
+                if (elementTop < windowHeight - elementVisible) {
+                    revealElements[i].classList.add('active');
+                } else {
+                    revealElements[i].classList.remove('active');
+                }
+            }
+        }
+
+        window.addEventListener('scroll', revealOnScroll);
+        revealOnScroll(); // Run on load
+
+        // FAQ Accordion
+        const faqItems = document.querySelectorAll('.faq-item');
+
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            question.addEventListener('click', () => {
+                // Close all other open FAQs
+                faqItems.forEach(otherItem => {
+                    if (otherItem !== item && otherItem.classList.contains('active')) {
+                        otherItem.classList.remove('active');
+                    }
+                });
+                // Toggle current FAQ
+                item.classList.toggle('active');
+            });
+        });
+
+        // Launch Countdown Timer
+        // Set the launch date to July 9th, 2025, at midnight
+        const launchDate = new Date('2025-07-09T00:00:00');
+
+        const countdownDiv = document.getElementById('countdown');
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = launchDate.getTime() - now;
+
+            if (distance < 0) {
+                countdownDiv.innerHTML = '<p class="text-3xl font-extrabold text-green-700">🎉 HYDRANT 2.O Has Launched! 🎉</p>';
+                clearInterval(countdownInterval);
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            countdownDiv.innerHTML = `
+                <div class="flex flex-col items-center p-4 bg-blue-50 rounded-xl shadow-md min-w-[70px]">
+                    <span class="text-4xl md:text-5xl font-extrabold text-blue-800">${String(days).padStart(2, '0')}</span>
+                    <span class="text-xs md:text-sm font-medium text-gray-600 uppercase">Days</span>
+                </div>
+                <span class="text-4xl md:text-5xl font-bold text-gray-700">:</span>
+                <div class="flex flex-col items-center p-4 bg-blue-50 rounded-xl shadow-md min-w-[70px]">
+                    <span class="text-4xl md:text-5xl font-extrabold text-blue-800">${String(hours).padStart(2, '0')}</span>
+                    <span class="text-xs md:text-sm font-medium text-gray-600 uppercase">Hours</span>
+                </div>
+                <span class="text-4xl md:text-5xl font-bold text-gray-700">:</span>
+                <div class="flex flex-col items-center p-4 bg-blue-50 rounded-xl shadow-md min-w-[70px]">
+                    <span class="text-4xl md:text-5xl font-extrabold text-blue-800">${String(minutes).padStart(2, '0')}</span>
+                    <span class="text-xs md:text-sm font-medium text-gray-600 uppercase">Minutes</span>
+                </div>
+                <span class="text-4xl md:text-5xl font-bold text-gray-700">:</span>
+                <div class="flex flex-col items-center p-4 bg-blue-50 rounded-xl shadow-md min-w-[70px]">
+                    <span class="text-4xl md:text-5xl font-extrabold text-blue-800">${String(seconds).padStart(2, '0')}</span>
+                    <span class="text-xs md:text-sm font-medium text-gray-600 uppercase">Seconds</span>
+                </div>
+            `;
+        }
+
+        const countdownInterval = setInterval(updateCountdown, 1000);
+        updateCountdown(); // Initial call
+
+        // AI Subscription Suggester
+        const householdSizeInput = document.getElementById('household-size');
+        const consumptionLevelSelect = document.getElementById('consumption-level');
+        const suggestionBtn = document.getElementById('suggestion-btn');
+        const suggestionBtnText = document.getElementById('suggestion-btn-text');
+        const suggestionLoader = document.getElementById('suggestion-loader');
+        const suggestionResult = document.getElementById('suggestion-result');
+        const suggestionResultP = suggestionResult.querySelector('p');
+
+        suggestionBtn.addEventListener('click', async () => {
+            const householdSize = householdSizeInput.value;
+            const consumptionLevel = consumptionLevelSelect.value;
+
+            if (!householdSize || householdSize < 1) {
+                suggestionResultP.textContent = 'Please enter a valid household size (at least 1).';
+                suggestionResult.classList.remove('hidden');
+                suggestionResult.classList.remove('bg-blue-50', 'border-blue-500');
+                suggestionResult.classList.add('bg-red-50', 'border-red-500');
+                suggestionResultP.classList.remove('text-blue-800');
+                suggestionResultP.classList.add('text-red-800');
+                return;
+            }
+
+            suggestionBtn.disabled = true;
+            suggestionBtnText.classList.add('hidden');
+            suggestionLoader.classList.remove('hidden');
+            suggestionResult.classList.add('hidden'); // Hide previous result
+
+            const prompt = `Based on a household size of ${householdSize} people and a consumption level of "${consumptionLevel}", suggest a water jar subscription plan for a 20-litre water delivery app. Focus on quantity and frequency.`;
+
+            // Gemini API call for AI Suggestion
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // Canvas will automatically provide this
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    suggestionResultP.textContent = text;
+                    suggestionResult.classList.remove('hidden', 'bg-red-50', 'border-red-500');
+                    suggestionResult.classList.add('bg-blue-50', 'border-blue-500');
+                    suggestionResultP.classList.remove('text-red-800');
+                    suggestionResultP.classList.add('text-blue-800');
+                } else {
+                    suggestionResultP.textContent = 'Could not get a suggestion. Please try again.';
+                    suggestionResult.classList.remove('hidden', 'bg-blue-50', 'border-blue-500');
+                    suggestionResult.classList.add('bg-red-50', 'border-red-500');
+                    suggestionResultP.classList.remove('text-blue-800');
+                    suggestionResultP.classList.add('text-red-800');
+                }
+            } catch (error) {
+                console.error('Error fetching AI suggestion:', error);
+                suggestionResultP.textContent = 'An error occurred while fetching suggestion. Please try again.';
+                suggestionResult.classList.remove('hidden', 'bg-blue-50', 'border-blue-500');
+                suggestionResult.classList.add('bg-red-50', 'border-red-500');
+                suggestionResultP.classList.remove('text-blue-800');
+                suggestionResultP.classList.add('text-red-800');
+            } finally {
+                suggestionBtn.disabled = false;
+                suggestionBtnText.classList.remove('hidden');
+                suggestionLoader.classList.add('hidden');
+            }
+        });
+
+
+        // AI FAQ Section
+        const aiFaqInput = document.getElementById('ai-faq-input');
+        const aiFaqBtn = document.getElementById('ai-faq-btn');
+        const aiFaqBtnText = document.getElementById('ai-faq-btn-text');
+        const aiFaqLoader = document.getElementById('ai-faq-loader');
+        const aiFaqResult = document.getElementById('ai-faq-result');
+
+        aiFaqBtn.addEventListener('click', async () => {
+            const query = aiFaqInput.value.trim();
+            if (!query) {
+                aiFaqResult.textContent = 'Please type your question.';
+                aiFaqResult.classList.remove('hidden');
+                return;
+            }
+
+            aiFaqBtn.disabled = true;
+            aiFaqBtnText.classList.add('hidden');
+            aiFaqLoader.classList.remove('hidden');
+            aiFaqResult.classList.add('hidden'); // Hide previous result
+
+            const prompt = `Answer the following question about a water delivery app named HYDRANT 2.O. The app provides 20-litre jars. Assume it's for West Bengal, India. Question: "${query}"`;
+
+            // Gemini API call for AI FAQ
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // Canvas will automatically provide this
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    aiFaqResult.textContent = text;
+                } else {
+                    aiFaqResult.textContent = 'Sorry, I could not find an answer to that question.';
+                }
+            } catch (error) {
+                console.error('Error fetching AI FAQ:', error);
+                aiFaqResult.textContent = 'An error occurred while fetching the answer. Please try again.';
+            } finally {
+                aiFaqBtn.disabled = false;
+                aiFaqBtnText.classList.remove('hidden');
+                aiFaqLoader.classList.add('hidden');
+                aiFaqResult.classList.remove('hidden');
+            }
+        });
+
+
+        // Modal Logic
+        const waitlistModal = document.getElementById('waitlist-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const joinWaitlistBtnHeader = document.getElementById('join-waitlist-btn-header');
+        const joinWaitlistBtnHero = document.getElementById('join-waitlist-btn-hero');
+        const modalFormMessage = document.getElementById('modal-form-message');
+        const modalSubmitBtn = document.getElementById('modal-submit-btn');
+        const modalBtnText = document.getElementById('modal-btn-text');
+        const modalLoader = document.getElementById('modal-loader');
+        const modalForm = document.getElementById('waitlistForm');
+
+        function openModal() {
+            waitlistModal.classList.remove('hidden');
+            setTimeout(() => {
+                waitlistModal.classList.add('opacity-100');
+                waitlistModal.querySelector('.modal-container').classList.add('scale-100', 'opacity-100');
+            }, 50);
+        }
+
+        function closeModal() {
+            waitlistModal.classList.remove('opacity-100');
+            waitlistModal.querySelector('.modal-container').classList.remove('scale-100', 'opacity-100');
+            setTimeout(() => {
+                waitlistModal.classList.add('hidden');
+                modalFormMessage.classList.add('hidden'); // Hide message on close
+                modalForm.reset(); // Clear form on close
+            }, 300);
+        }
+
+        joinWaitlistBtnHeader.addEventListener('click', openModal);
+        joinWaitlistBtnHero.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        waitlistModal.addEventListener('click', (e) => {
+            if (e.target === waitlistModal) {
+                closeModal();
+            }
+        });
+
+        // Form Submission Logic for Modal
+        const GOOGLE_APPS_SCRIPT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwsCZYLXo7_iBwbSCNimxnXVWku7tLaxOTKCn_t9rA-TVIUSWpRx6y2tX2y0CnUTOPR-g/exec'; // Your deployed /exec URL
+
+        modalForm.addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            modalBtnText.classList.add('hidden');
+            modalLoader.classList.remove('hidden');
+            modalSubmitBtn.disabled = true;
+            
+            modalFormMessage.textContent = 'Submitting...';
+            modalFormMessage.classList.remove('hidden', 'text-green-600', 'text-red-600');
+            modalFormMessage.classList.add('text-gray-600');
+
+            const name = document.getElementById('modal-name').value;
+            const email = document.getElementById('modal-email').value;
+            const mobile = document.getElementById('modal-mobile').value;
+            const address = document.getElementById('modal-address').value; // Get address value
+            const pincode = document.getElementById('modal-pincode').value;
+
+
+            const formData = {
+                name: name,
+                email: email,
+                mobile: mobile,
+                address: address, // Include address in formData
+                pincode: pincode,
+                timestamp: new Date().toLocaleString()
+            };
+
+            try {
+                const response = await fetch(GOOGLE_APPS_SCRIPT_WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                modalFormMessage.textContent = 'Successfully joined the waitlist! Thank you.';
+                modalFormMessage.classList.remove('text-gray-600', 'text-red-600');
+                modalFormMessage.classList.add('text-green-600');
+                modalForm.reset();
+
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                modalFormMessage.textContent = 'Error joining waitlist. Please try again.';
+                modalFormMessage.classList.remove('text-gray-600', 'text-green-600');
+                modalFormMessage.classList.add('text-red-600');
+            } finally {
+                modalBtnText.classList.remove('hidden');
+                modalLoader.classList.add('hidden');
+                modalSubmitBtn.disabled = false;
+                modalFormMessage.classList.remove('hidden');
+            }
+        });
+
+    </script>
+</body>
+</html>
